@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 export default function PromptForm({ setImageUrl, setStatus }) {
   const [prompt, setPrompt] = useState('');
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -9,6 +10,7 @@ export default function PromptForm({ setImageUrl, setStatus }) {
 
     setStatus('loading');
     setImageUrl(null);
+    setError(null);
 
     try {
       const response = await fetch('https://image-gen-server-gpwb.onrender.com/api/generate', {
@@ -20,6 +22,9 @@ export default function PromptForm({ setImageUrl, setStatus }) {
       });
 
       if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error('Too many requests. Please try again later.');
+        }
         const errorData = await response.json();
         throw new Error(errorData.message || `HTTP error ${response.status}`);
       }
@@ -31,6 +36,7 @@ export default function PromptForm({ setImageUrl, setStatus }) {
       console.error('Image generation error:', error);
       setStatus('error');
       setImageUrl(null);
+      setError(error.message);
     }
   };
 
@@ -44,7 +50,7 @@ export default function PromptForm({ setImageUrl, setStatus }) {
       />
       <button type="submit">Generate Image</button>
       {status === 'loading' && <p>Generating image... This may take a few minutes due to high demand.</p>}
-      {status === 'error' && <p>Image generation failed: {error?.message || 'Unknown error'}</p>}
+      {status === 'error' && <p>Image generation failed: {error}</p>}
     </form>
   );
 }
