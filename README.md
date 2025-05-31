@@ -190,5 +190,5 @@ ai-image-generator-client/
 
 ---
 
-Let me know if you'd like a similar `README.md` written for the **server** (`Express.js` + `OpenAI`) or if you need badge icons (GitHub Actions, Vercel/Render, etc.) added to the top of this file.
+
 ```
